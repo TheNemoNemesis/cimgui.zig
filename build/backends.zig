@@ -11,6 +11,7 @@ const flags_size = utils.flags_size;
 pub const Renderer = enum {
     Vulkan,
     OpenGL3,
+    SDLRenderer3,
 };
 
 pub const Platform = enum {
@@ -56,6 +57,14 @@ pub fn backendOptions(toolbox: *Toolbox, builder: *std.Build, lib: *std.Build.St
 
                 lib.root_module.addImport("gl", gl_bindings);
             },
+            .SDLRenderer3 => {
+                if (platform_opt) |platform| {
+                    if (platform == .SDL3) {
+                        try toolbox.addSource(lib, path.getBackends(), "imgui_impl_sdlrenderer3.cpp", flags.slice());
+                        try toolbox.addSource(lib, path.getBackends(), "dcimgui_impl_sdlrenderer3.cpp", flags.slice());
+                    } else std.log.warn("Incompatible platform and renderer", .{});
+                }
+            }
         }
     } else std.log.warn("Unspecified renderer backend", .{});
 
